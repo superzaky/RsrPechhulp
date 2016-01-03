@@ -2,5 +2,6 @@
     <string name="app_name">RsrPechhulp</string>
     <string name="toolbar_title">RSR Revalidatieservice</string>
     <string name="btn_breakdown">RSR Pechhulp</string>
+    <string name="title_activity_break_down_on_maps">Map</string>
 
 </resources>
