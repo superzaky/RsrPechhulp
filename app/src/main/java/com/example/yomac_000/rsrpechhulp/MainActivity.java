@@ -17,12 +17,10 @@ public class MainActivity extends AppCompatActivity {
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             public void run() {
-                System.out.println("go!");
                 intent = new Intent(MainActivity.this, RehabilitationMenu.class);
                 startActivity(intent);
                 finish();
-                System.out.println("go! man");
             }
-        }, 2000);
+        }, 0500);
     }
 }
