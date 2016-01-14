@@ -31,6 +31,7 @@ public class BreakDownOnMaps extends FragmentActivity implements
     double currentLatitude;
     double currentLongitude;
     LatLng latLng;
+    GoogleMap gMap;
 
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -68,6 +69,11 @@ public class BreakDownOnMaps extends FragmentActivity implements
         currentLongitude = loc.getLongitude();
         latLng = new LatLng(currentLatitude, currentLongitude);
         System.out.println("handleNewLocation ");
+        MarkerOptions options = new MarkerOptions()
+                .position(latLng)
+                .title("I am here!");
+        gMap.addMarker(options);
+        gMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
     }
 
     @Override
@@ -101,10 +107,21 @@ public class BreakDownOnMaps extends FragmentActivity implements
         System.out.println("currentLatitude : " + currentLatitude);
         System.out.println("currentLongitude : " + currentLongitude);
         latLng = new LatLng(currentLatitude, currentLongitude);
-        MarkerOptions options = new MarkerOptions()
-                .position(latLng)
-                .title("I am here!");
-        googleMap.addMarker(options);
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        setgMap(googleMap);
+        if(currentLatitude != 0 || currentLongitude != 0) {
+            MarkerOptions options = new MarkerOptions()
+                    .position(latLng)
+                    .title("I am here!");
+            googleMap.addMarker(options);
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        }
+    }
+
+    public GoogleMap getgMap() {
+        return gMap;
+    }
+
+    public void setgMap(GoogleMap gMap) {
+        this.gMap = gMap;
     }
 }
