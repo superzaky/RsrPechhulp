@@ -1,71 +1,77 @@
 package utils;
 
+import android.Manifest;
 import android.content.Context;
-import android.location.Address;
-import android.location.Geocoder;
+import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
+import com.example.yomac_000.rsrpechhulp.BreakDownOnMaps;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * Created by yomac_000 on 3-1-2016.
  */
-public class MyLocationListener implements LocationListener {
+public class MyLocationListener implements
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        LocationListener {
     private final Context context;
     private GoogleMap mMap;
+    private BreakDownOnMaps breakDownOnMaps;
+    protected GoogleApiClient mGoogleApiClient;
+    private LocationRequest mLocationRequest =  new LocationRequest();
 
     public MyLocationListener(Context context) {
         this.context = context;
+        buildApi();
     }
+
     @Override
-    public void onLocationChanged(Location loc) {
+    public void onLocationChanged(Location location) {
+        breakDownOnMaps.handleNewLocation(location);
+    }
 
-        String longitude = "Longitude: " + loc.getLongitude();
-        String latitude = "Latitude: " + loc.getLatitude();
-
-        /*------- To get city name from coordinates -------- */
-        String cityName = null;
-        Geocoder gcd = new Geocoder(context, Locale.getDefault());
-        List<Address> addresses;
-        try {
-            addresses = gcd.getFromLocation(loc.getLatitude(),
-                    loc.getLongitude(), 1);
-            if (addresses.size() > 0)
-                System.out.println(addresses.get(0).getLocality());
-            cityName = addresses.get(0).getLocality();
+    @Override
+    public void onConnected(Bundle bundle) {
+        System.out.println("onConnected");
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
         }
-        catch (IOException e) {
-            e.printStackTrace();
+        Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (location == null) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, (com.google.android.gms.location.LocationListener) this);
         }
-        String s = longitude + "\n" + latitude + "\n\nMy Current City is: "
-                + cityName;
-
-        LatLng currentLocation = new LatLng(loc.getLatitude(), loc.getLongitude());
-        mMap.addMarker(new MarkerOptions().position(currentLocation).title("Marker on current location"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
+        else {
+            breakDownOnMaps.handleNewLocation(location);
+        };
     }
 
     @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
+    public void onConnectionSuspended(int i) {
 
     }
 
     @Override
-    public void onProviderDisabled(String provider) {
+    public void onConnectionFailed(ConnectionResult connectionResult) {
 
+    }
+
+    private void buildApi() {
+        mGoogleApiClient = new GoogleApiClient.Builder(context)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+
+    public void connect() {
+        mGoogleApiClient.connect();
     }
 }
