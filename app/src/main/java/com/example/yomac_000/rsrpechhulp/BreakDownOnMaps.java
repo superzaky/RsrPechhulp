@@ -30,6 +30,7 @@ public class BreakDownOnMaps extends FragmentActivity implements
         setContentView(R.layout.activity_break_down_on_maps);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+
         mapFragment.getMapAsync(this);
         myLocationListener = new MyLocationListener(this);
     }
@@ -63,14 +64,22 @@ public class BreakDownOnMaps extends FragmentActivity implements
         System.out.println("currentLatitude : " + currentLatitude);
         System.out.println("currentLongitude : " + currentLongitude);
         latLng = new LatLng(currentLatitude, currentLongitude);
-        setgMap(googleMap);
-        if(currentLatitude != 0 || currentLongitude != 0) {
-            MarkerOptions options = new MarkerOptions()
-                    .position(latLng)
-                    .title("I am here!");
-            googleMap.addMarker(options);
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+
+        if(googleMap != null) {
+            setgMap(googleMap);
+            if(currentLatitude != 0 || currentLongitude != 0) {
+                MarkerOptions options = new MarkerOptions()
+                        .position(latLng)
+                        .title("I am here!");
+                googleMap.addMarker(options);
+                googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            } else {
+                System.out.println("currentLatitude OR currentLongitude is NULL");
+            }
+        } else {
+            System.out.println("googleMap is NULL");
         }
+
     }
 
     public GoogleMap getgMap() {

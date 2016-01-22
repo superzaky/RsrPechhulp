@@ -24,7 +24,7 @@ public class MyLocationListener implements
         LocationListener {
     private final Context context;
     private GoogleMap mMap;
-    private BreakDownOnMaps breakDownOnMaps;
+    private BreakDownOnMaps breakDownOnMaps = new BreakDownOnMaps();
     protected GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest =  new LocationRequest();
 
