@@ -73,7 +73,8 @@ public class BreakDownOnMaps extends FragmentActivity implements
                 .position(latLng)
                 .title("I am here!");
         gMap.addMarker(options);
-        gMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+        //je bent bezig met de pop-up
     }
 
     @Override
