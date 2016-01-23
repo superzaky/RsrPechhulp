@@ -1,10 +1,10 @@
 package com.example.yomac_000.rsrpechhulp;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -18,8 +18,16 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+
+import adapters.PopupAdapter;
 
 public class BreakDownOnMaps extends FragmentActivity implements
         GoogleApiClient.ConnectionCallbacks,
@@ -32,9 +40,9 @@ public class BreakDownOnMaps extends FragmentActivity implements
     double currentLongitude;
     LatLng latLng;
     GoogleMap gMap;
+    Geocoder geoCoder;
+    List<Address> addresses;
 
-
-    @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,12 +77,31 @@ public class BreakDownOnMaps extends FragmentActivity implements
         currentLongitude = loc.getLongitude();
         latLng = new LatLng(currentLatitude, currentLongitude);
         System.out.println("handleNewLocation ");
-        MarkerOptions options = new MarkerOptions()
+        geoCoder = new Geocoder(this, Locale.getDefault());
+        try {
+            addresses = geoCoder.getFromLocation(currentLatitude, currentLongitude, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String address = addresses.get(0).getAddressLine(0);
+        String zipCode = addresses.get(0).getPostalCode();
+        String city = addresses.get(0).getLocality();
+        String country = addresses.get(0).getCountryName();
+
+        Marker marker = gMap.addMarker(new MarkerOptions()
                 .position(latLng)
-                .title("I am here!");
-        gMap.addMarker(options);
+                .title("Uw Locatie:")
+                .snippet(address + ", " + zipCode + "\n" +
+                        city + ", " + country + "\n" +
+                        "\n" +
+                        "Onthoud deze locatie voor het "+ "\n" +
+                        "telefoongesprek.")
+                .icon(BitmapDescriptorFactory
+                        .fromResource(R.drawable.map_marker)));
+        gMap.setInfoWindowAdapter(new PopupAdapter(getLayoutInflater()));
         gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-        //je bent bezig met de pop-up
+        marker.showInfoWindow();
     }
 
     @Override
