@@ -5,6 +5,9 @@
     <string name="btn_breakdown">RSR Pechhulp</string>
     <string name="btn_call">Bel RSR nu</string>
     <string name="btn_call_confirm">Bel nu</string>
+    <string name="btn_call_cancel">Annuleren</string>
     <string name="title_activity_break_down_on_maps">Map</string>
+    <string name="dialog_title">Belkosten</string>
+    <string name="dialog_text">Voor dit nummer betaalt u uw gebruikelijke belkosten</string>
 
 </resources>

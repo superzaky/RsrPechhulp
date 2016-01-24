@@ -1,13 +1,23 @@
 package com.example.yomac_000.rsrpechhulp;
 
 import android.Manifest;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AlertDialog;
+import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -42,6 +52,7 @@ public class BreakDownOnMaps extends FragmentActivity implements
     GoogleMap gMap;
     Geocoder geoCoder;
     List<Address> addresses;
+    private Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +62,84 @@ public class BreakDownOnMaps extends FragmentActivity implements
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        button = (Button) findViewById(R.id.LinkToPopUp);
+
+        // add button listener
+        button.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                try
+                {
+                    showDialog("0631293494");
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+    public void showDialog(final String phone) throws Exception
+    {
+        MyTouchListener touchListener = new MyTouchListener();
+        AlertDialog.Builder builder = new AlertDialog.Builder(BreakDownOnMaps.this);
+        builder.setTitle(R.string.dialog_title);
+        builder.setMessage(R.string.dialog_text);
+
+        builder.setPositiveButton(R.string.btn_call_confirm, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent callIntent = new Intent(Intent.ACTION_DIAL);// (Intent.ACTION_CALL);
+
+                callIntent.setData(Uri.parse("tel:" + phone));
+
+                startActivity(callIntent);
+
+                dialog.dismiss();
+            }
+        });
+        
+        builder.setNegativeButton(R.string.btn_call_cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        Window window = dialog.getWindow();
+        WindowManager.LayoutParams wlp = window.getAttributes();
+
+        wlp.gravity = Gravity.BOTTOM;
+        wlp.flags &= ~WindowManager.LayoutParams.FLAG_DIM_BEHIND;
+        window.setAttributes(wlp);
+
+        dialog.show();
+        //builder.show();
+    }
+
+    public class MyTouchListener implements View.OnTouchListener {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            switch(v.getId()){
+                case 1:
+                    //do stuff for button 1
+                    break;
+                case 2:
+                    //do stuff for button 2
+                    break;
+                case 3:
+                    //do stuff for button 3
+                    break;
+                case 4:
+                    //do stuff for button 4
+                    break;
+            }
+            return true;
+        }
+
     }
 
     @Override
