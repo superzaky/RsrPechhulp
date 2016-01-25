@@ -1,56 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/dialog_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:text="@string/dialog_title"/>
+    <TextView
+        android:id="@+id/dialog_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:padding="10dp"
+        android:text="@string/dialog_text"
+        android:layout_below="@id/dialog_title"/>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="25dp"
-        android:orientation="vertical"
-        android:background="#612E2E">
-
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="25sp"
-            android:textStyle="bold"
-            android:text="@string/dialog_title"
-            />
-
-        <TextView
-            android:id="@+id/snippet"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="15sp"
-            android:text="@string/dialog_text"/>
-
+        android:layout_height="40dp"
+        android:layout_below="@id/dialog_info">
         <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_breakdown"
-            android:textSize="20dp"
+            android:id="@+id/dialog_cancel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.50"
+            android:background="@color/lightred"
+            android:textColor="@color/white"
+            android:paddingLeft="50px"
             android:textAllCaps="false"
+            android:drawableLeft="@drawable/main_btn_close"
+            android:text="@string/btn_call_cancel"/>
+        <Button
+            android:id="@+id/dialog_ok"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.50"
             android:background="@color/blue"
             android:textColor="@color/white"
-            android:drawableLeft="@drawable/main_btn_warning"
             android:paddingLeft="50px"
-            android:layout_alignParentBottom="true"
-            android:id="@+id/LinkToBreakDownMapScreen"
-            />
+            android:textAllCaps="false"
+            android:drawableLeft="@drawable/main_btn_tel"
+            android:text="@string/btn_call_confirm"/>
     </LinearLayout>
-    <Button
-        android:id="@+id/dialog_close"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|left"
-        android:background="@color/blue"
-        android:text="@string/btn_call_cancel"
-        android:drawablePadding="25px"
-        android:paddingLeft="19px"
-        android:paddingRight="19px"
-        android:layout_marginLeft="20px"
-        android:drawableLeft="@drawable/main_btn_close"/>
-</FrameLayout>
+</RelativeLayout>

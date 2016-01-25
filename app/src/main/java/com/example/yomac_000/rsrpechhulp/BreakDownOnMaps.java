@@ -1,23 +1,30 @@
 package com.example.yomac_000.rsrpechhulp;
 
 import android.Manifest;
+import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -46,100 +53,174 @@ public class BreakDownOnMaps extends FragmentActivity implements
         OnMapReadyCallback {
     protected GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest =  new LocationRequest();
-    double currentLatitude;
-    double currentLongitude;
-    LatLng latLng;
-    GoogleMap gMap;
-    Geocoder geoCoder;
-    List<Address> addresses;
+    private double currentLatitude;
+    private double currentLongitude;
+    private LatLng latLng;
+    private GoogleMap gMap;
+    private Geocoder geoCoder;
+    private List<Address> addresses;
     private Button button;
+    private View vLinkToRehabMenu;
+    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_break_down_on_maps);
+        final LocationManager manager = (LocationManager) getSystemService( BreakDownOnMaps.this.LOCATION_SERVICE );
+
+        if(!isOnline()) {
+            buildAlertMessageNoInternet();
+        }
+
+        if ( !manager.isProviderEnabled(LocationManager.GPS_PROVIDER) ) {
+            buildAlertMessageNoGps();
+        }
+
         buildApi();
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        vLinkToRehabMenu = findViewById(R.id.tvLinkToRehabMenu);;
         button = (Button) findViewById(R.id.LinkToPopUp);
 
-        // add button listener
-        button.setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener myOnlyhandler = new View.OnClickListener() {
+            public void onClick(View v) {
+                switch(v.getId()) {
+                    case R.id.tvLinkToRehabMenu:
+                        intent = new Intent(getApplicationContext(),
+                                RehabilitationMenu.class);
+                        startActivity(intent);
+                        finish();
+                        break;
+                    case R.id.LinkToPopUp:
+                        // custom dialog
+                        final Dialog dialog = new Dialog(BreakDownOnMaps.this);
+                        dialog.requestWindowFeature(Window.FEATURE_LEFT_ICON);
+                        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                        dialog.setContentView(R.layout.dialog);
+                        Button dialogBtnCancel, dialogBtnConfirm;
+                        dialogBtnCancel = (Button) dialog.findViewById(R.id.dialog_cancel);
+                        dialogBtnConfirm =  (Button) dialog.findViewById(R.id.dialog_ok);
 
-            @Override
-            public void onClick(View arg0) {
-                try
-                {
-                    showDialog("0631293494");
+                        View.OnClickListener myOnlyhandler = new View.OnClickListener() {
+                            public void onClick(View v) {
+                                switch(v.getId()) {
+                                    case R.id.tvLinkToRehabMenu:
+                                        intent = new Intent(getApplicationContext(),
+                                                RehabilitationMenu.class);
+                                        startActivity(intent);
+                                        finish();
+                                        break;
+                                    case R.id.dialog_cancel:
+                                        dialog.dismiss();
+                                        break;
+                                    case R.id.dialog_ok:
+                                        try {
+                                            Intent callIntent = new Intent(Intent.ACTION_CALL);
+                                            callIntent.setData(Uri.parse("tel:" + "0631293494"));
+                                            if (ContextCompat.checkSelfPermission(BreakDownOnMaps.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                                                // TODO: Consider calling
+                                                //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
+                                                // here to request the missing permissions, and then overriding
+                                                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                                //                                          int[] grantResults)
+                                                // to handle the case where the user grants the permission. See the documentation
+                                                // for Activity#requestPermissions for more details.
+                                                return;
+                                            }
+                                            startActivity(callIntent);
+                                        } catch (ActivityNotFoundException activityException) {
+                                            Toast.makeText(getApplicationContext(),
+                                                    "Het bellen is mislukt", Toast.LENGTH_LONG)
+                                                    .show();
+                                        }
+                                        break;
+                                }
+                            }
+                        };
+
+                        dialogBtnCancel.setOnClickListener(myOnlyhandler);
+                        dialogBtnConfirm.setOnClickListener(myOnlyhandler);
+
+                        dialog.setCanceledOnTouchOutside(false);
+                        dialog.getWindow().setBackgroundDrawableResource(R.color.lightgreen);
+
+                        Window window = dialog.getWindow();
+                        WindowManager.LayoutParams wlp = window.getAttributes();
+                        wlp.gravity = Gravity.BOTTOM;
+                        wlp.flags &= ~WindowManager.LayoutParams.FLAG_DIM_BEHIND;
+                        window.setAttributes(wlp);
+
+                        dialog.show();
+                        break;
                 }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
             }
-        });
-    }
-    public void showDialog(final String phone) throws Exception
-    {
-        MyTouchListener touchListener = new MyTouchListener();
-        AlertDialog.Builder builder = new AlertDialog.Builder(BreakDownOnMaps.this);
-        builder.setTitle(R.string.dialog_title);
-        builder.setMessage(R.string.dialog_text);
-
-        builder.setPositiveButton(R.string.btn_call_confirm, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Intent callIntent = new Intent(Intent.ACTION_DIAL);// (Intent.ACTION_CALL);
-
-                callIntent.setData(Uri.parse("tel:" + phone));
-
-                startActivity(callIntent);
-
-                dialog.dismiss();
-            }
-        });
-        
-        builder.setNegativeButton(R.string.btn_call_cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-
-        AlertDialog dialog = builder.create();
-        Window window = dialog.getWindow();
-        WindowManager.LayoutParams wlp = window.getAttributes();
-
-        wlp.gravity = Gravity.BOTTOM;
-        wlp.flags &= ~WindowManager.LayoutParams.FLAG_DIM_BEHIND;
-        window.setAttributes(wlp);
-
-        dialog.show();
-        //builder.show();
+        };
+        vLinkToRehabMenu.setOnClickListener(myOnlyhandler);
+        button.setOnClickListener(myOnlyhandler);
     }
 
-    public class MyTouchListener implements View.OnTouchListener {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            switch(v.getId()){
-                case 1:
-                    //do stuff for button 1
-                    break;
-                case 2:
-                    //do stuff for button 2
-                    break;
-                case 3:
-                    //do stuff for button 3
-                    break;
-                case 4:
-                    //do stuff for button 4
-                    break;
-            }
-            return true;
-        }
+    @Override
+    public void onBackPressed() {
+        intent = new Intent(getApplicationContext(),
+                RehabilitationMenu.class);
+        startActivity(intent);
+        finish();
+    }
 
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(BreakDownOnMaps.this.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
+    private void buildAlertMessageNoGps() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Uw GPS staat momenteel uit wilt u deze aanzetten?")
+                .setCancelable(false)
+                .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
+                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                })
+                .setNegativeButton("Nee", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private void buildAlertMessageNoInternet() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("U heeft geen internetverbinding wilt u verbinding maken?")
+                .setCancelable(false)
+                .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
+                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                    }
+                })
+                .setNegativeButton("Nee", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+        doKeepDialog(alert);
+    }
+
+    // Prevent dialog dismiss when orientation changes
+    private static void doKeepDialog(Dialog dialog){
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(dialog.getWindow().getAttributes());
+        lp.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        dialog.getWindow().setAttributes(lp);
     }
 
     @Override
@@ -154,6 +235,7 @@ public class BreakDownOnMaps extends FragmentActivity implements
     }
 
     private void buildApi() {
+        System.out.println("buildApi");
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -173,24 +255,26 @@ public class BreakDownOnMaps extends FragmentActivity implements
             e.printStackTrace();
         }
 
-        String address = addresses.get(0).getAddressLine(0);
-        String zipCode = addresses.get(0).getPostalCode();
-        String city = addresses.get(0).getLocality();
-        String country = addresses.get(0).getCountryName();
+        if(isOnline()) {
+            String address = addresses.get(0).getAddressLine(0);
+            String zipCode = addresses.get(0).getPostalCode();
+            String city = addresses.get(0).getLocality();
+            String country = addresses.get(0).getCountryName();
 
-        Marker marker = gMap.addMarker(new MarkerOptions()
-                .position(latLng)
-                .title("Uw Locatie:")
-                .snippet(address + ", " + zipCode + "\n" +
-                        city + ", " + country + "\n" +
-                        "\n" +
-                        "Onthoud deze locatie voor het "+ "\n" +
-                        "telefoongesprek.")
-                .icon(BitmapDescriptorFactory
-                        .fromResource(R.drawable.map_marker)));
-        gMap.setInfoWindowAdapter(new PopupAdapter(getLayoutInflater()));
-        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-        marker.showInfoWindow();
+            Marker marker = gMap.addMarker(new MarkerOptions()
+                    .position(latLng)
+                    .title("Uw Locatie:")
+                    .snippet(address + ", " + zipCode + "\n" +
+                            city + ", " + country + "\n" +
+                            "\n" +
+                            "Onthoud deze locatie voor het "+ "\n" +
+                            "telefoongesprek.")
+                    .icon(BitmapDescriptorFactory
+                            .fromResource(R.drawable.map_marker)));
+            gMap.setInfoWindowAdapter(new PopupAdapter(getLayoutInflater()));
+            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+            marker.showInfoWindow();
+        }
     }
 
     @Override
@@ -232,10 +316,6 @@ public class BreakDownOnMaps extends FragmentActivity implements
             googleMap.addMarker(options);
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         }
-    }
-
-    public GoogleMap getgMap() {
-        return gMap;
     }
 
     public void setgMap(GoogleMap gMap) {
