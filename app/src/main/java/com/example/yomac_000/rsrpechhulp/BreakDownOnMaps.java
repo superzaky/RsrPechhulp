@@ -82,7 +82,7 @@ public class BreakDownOnMaps extends FragmentActivity implements
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        vLinkToRehabMenu = findViewById(R.id.tvLinkToRehabMenu);;
+        vLinkToRehabMenu = findViewById(R.id.tvLinkToRehabMenu);
         button = (Button) findViewById(R.id.LinkToPopUp);
 
         View.OnClickListener myOnlyhandler = new View.OnClickListener() {

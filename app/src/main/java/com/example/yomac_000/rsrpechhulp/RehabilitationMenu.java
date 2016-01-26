@@ -37,6 +37,7 @@ public class RehabilitationMenu extends AppCompatActivity {
                 }
             }
         };
+        imgBtnAboutScreen.setOnClickListener(myOnlyhandler);
         btnBreakDownMapScreen.setOnClickListener(myOnlyhandler);
     }
 }
