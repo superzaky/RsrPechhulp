@@ -2,36 +2,35 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical">
-
+        android:layout_marginTop="50dp">
         <ImageView
-            android:id="@+id/image"
-            android:layout_width="wrap_content"
+            android:id="@+id/imageview"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:adjustViewBounds="true"
+            android:maxHeight="250dp"
+            android:minHeight="250dp"
+            android:scaleType="center"
             android:src="@drawable/info_bg"/>
-
         <ScrollView
             android:id="@+id/SCROLLER_ID"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scrollbars="vertical"
             android:fillViewport="true"
-            android:layout_below="@+id/image">
-
+            android:layout_below="@+id/imageview">
             <TextView
                 android:id="@+id/about_text"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1.0"
                 android:padding="25dp"/>
-
         </ScrollView>
-
-    </LinearLayout>
+    </RelativeLayout>
     <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/toolbar_actionbar"
         android:layout_width="match_parent"
@@ -49,5 +48,4 @@
             android:onClick="onClick"
             android:clickable="true"/>
     </android.support.v7.widget.Toolbar>
-
 </FrameLayout>

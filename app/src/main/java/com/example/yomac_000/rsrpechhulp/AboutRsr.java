@@ -14,19 +14,16 @@ import android.widget.TextView;
 
 public class AboutRsr extends AppCompatActivity {
     private View vLinkToRehabMenu;
-    private View imgBtnAboutScreen;
     private Intent intent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.about_rsr);
-
         TextView tv = (TextView) findViewById(R.id.about_text);
         tv.setText(Html.fromHtml(getString(R.string.about_text)));
         tv.setMovementMethod(LinkMovementMethod.getInstance());
-
         vLinkToRehabMenu = findViewById(R.id.tvLinkToRehabMenu);
-        imgBtnAboutScreen = findViewById(R.id.LinkToAboutScreen);
+
         View.OnClickListener myOnlyhandler = new View.OnClickListener() {
             public void onClick(View v) {
                 switch(v.getId()) {
@@ -39,6 +36,7 @@ public class AboutRsr extends AppCompatActivity {
                 }
             }
         };
+
         vLinkToRehabMenu.setOnClickListener(myOnlyhandler);
     }
 
