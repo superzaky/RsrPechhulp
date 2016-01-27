@@ -15,6 +15,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Timer timer = new Timer();
+        //Through the schedule() we execute a task after 1.5 seconds
         timer.schedule(new TimerTask() {
             public void run() {
                 intent = new Intent(MainActivity.this, RehabilitationMenu.class);

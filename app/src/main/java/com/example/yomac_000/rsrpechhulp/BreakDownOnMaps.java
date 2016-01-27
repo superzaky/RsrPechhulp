@@ -68,18 +68,17 @@ public class BreakDownOnMaps extends FragmentActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_break_down_on_maps);
         final LocationManager manager = (LocationManager) getSystemService( BreakDownOnMaps.this.LOCATION_SERVICE );
+        //Returns false if there isn't a internet connection on the device
+        if(!isOnline()) buildAlertMessageNoInternet();
 
-        if(!isOnline()) {
-            buildAlertMessageNoInternet();
-        }
+        //Returns false if GPS isn't enabled on the device
+        if ( !manager.isProviderEnabled(LocationManager.GPS_PROVIDER) ) buildAlertMessageNoGps();
 
-        if ( !manager.isProviderEnabled(LocationManager.GPS_PROVIDER) ) {
-            buildAlertMessageNoGps();
-        }
-
+        //Initializing the GoogleApiClient object
         buildApi();
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+        //Through calling getMapAsync() we are calling the onMapReady() through a callback
         mapFragment.getMapAsync(this);
 
         vLinkToRehabMenu = findViewById(R.id.tvLinkToRehabMenu);
@@ -147,8 +146,10 @@ public class BreakDownOnMaps extends FragmentActivity implements
                         dialog.setCanceledOnTouchOutside(false);
                         dialog.getWindow().setBackgroundDrawableResource(R.color.lightgreen);
 
+
                         Window window = dialog.getWindow();
                         WindowManager.LayoutParams wlp = window.getAttributes();
+                        // Setting the dialog window at the bottom of the screen
                         wlp.gravity = Gravity.BOTTOM;
                         wlp.flags &= ~WindowManager.LayoutParams.FLAG_DIM_BEHIND;
                         window.setAttributes(wlp);
@@ -235,7 +236,6 @@ public class BreakDownOnMaps extends FragmentActivity implements
     }
 
     private void buildApi() {
-        System.out.println("buildApi");
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -247,9 +247,9 @@ public class BreakDownOnMaps extends FragmentActivity implements
         currentLatitude = loc.getLatitude();
         currentLongitude = loc.getLongitude();
         latLng = new LatLng(currentLatitude, currentLongitude);
-        System.out.println("handleNewLocation ");
         geoCoder = new Geocoder(this, Locale.getDefault());
         try {
+            //Initializing the Address list with address, postal code, city etc.
             addresses = geoCoder.getFromLocation(currentLatitude, currentLongitude, 1);
         } catch (IOException e) {
             e.printStackTrace();
@@ -271,6 +271,7 @@ public class BreakDownOnMaps extends FragmentActivity implements
                             "telefoongesprek.")
                     .icon(BitmapDescriptorFactory
                             .fromResource(R.drawable.map_marker)));
+            //Setting the info window with my own implementation
             gMap.setInfoWindowAdapter(new PopupAdapter(getLayoutInflater()));
             gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
             marker.showInfoWindow();
@@ -305,8 +306,6 @@ public class BreakDownOnMaps extends FragmentActivity implements
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        System.out.println("currentLatitude : " + currentLatitude);
-        System.out.println("currentLongitude : " + currentLongitude);
         latLng = new LatLng(currentLatitude, currentLongitude);
         setgMap(googleMap);
         if(currentLatitude != 0 || currentLongitude != 0) {
