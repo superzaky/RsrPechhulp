@@ -13,6 +13,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
+
 import utils.MyLocationListener;
 
 public class BreakDownOnMaps extends FragmentActivity implements
@@ -22,6 +24,7 @@ public class BreakDownOnMaps extends FragmentActivity implements
     LatLng latLng;
     GoogleMap gMap;
     private MyLocationListener myLocationListener;
+    ArrayList<Location> locationList = new ArrayList<Location>();
 
     @TargetApi(Build.VERSION_CODES.M)
     @Override
@@ -30,7 +33,6 @@ public class BreakDownOnMaps extends FragmentActivity implements
         setContentView(R.layout.activity_break_down_on_maps);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-
         mapFragment.getMapAsync(this);
         myLocationListener = new MyLocationListener(this);
     }
@@ -52,11 +54,21 @@ public class BreakDownOnMaps extends FragmentActivity implements
         currentLongitude = loc.getLongitude();
         latLng = new LatLng(currentLatitude, currentLongitude);
         System.out.println("handleNewLocation ");
-        MarkerOptions options = new MarkerOptions()
-                .position(latLng)
-                .title("I am here!");
-        gMap.addMarker(options);
-        gMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+
+
+        if (gMap != null) {
+
+            MarkerOptions options = new MarkerOptions()
+                    .position(latLng)
+                    .title("I am here!");
+
+            System.out.println("null");
+            gMap.addMarker(options);
+            gMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        } else{
+            locationList.add(loc);
+            System.out.println("f null");
+        }
     }
 
     @Override
@@ -64,6 +76,12 @@ public class BreakDownOnMaps extends FragmentActivity implements
         System.out.println("currentLatitude : " + currentLatitude);
         System.out.println("currentLongitude : " + currentLongitude);
         latLng = new LatLng(currentLatitude, currentLongitude);
+
+        System.out.println("locationList");
+        for (int i = 0; i < locationList.size(); i++) {
+            System.out.println("een lat lcoatie " + locationList.get(i).getLatitude());
+        }
+
 
         if(googleMap != null) {
             setgMap(googleMap);
