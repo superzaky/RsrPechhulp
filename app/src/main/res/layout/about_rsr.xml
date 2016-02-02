@@ -12,10 +12,12 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:adjustViewBounds="true"
-            android:maxHeight="250dp"
-            android:minHeight="250dp"
-            android:scaleType="center"
             android:src="@drawable/info_bg"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:layout_below="@+id/imageview"
+            android:background="@color/lightblue"/>
         <ScrollView
             android:id="@+id/SCROLLER_ID"
             android:layout_width="match_parent"

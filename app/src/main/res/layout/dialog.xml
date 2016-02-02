@@ -2,44 +2,47 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    <TextView
-        android:id="@+id/dialog_title"
-        android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <Button
+        android:id="@+id/dialog_cancel"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textSize="25sp"
-        android:textStyle="bold"
+        android:paddingLeft="20dp"
+        android:textAllCaps="false"
+        android:background="@color/blue"
         android:textColor="@color/white"
-        android:text="@string/dialog_title"/>
-    <TextView
-        android:id="@+id/dialog_info"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/white"
-        android:padding="10dp"
-        android:text="@string/dialog_text"
-        android:layout_below="@id/dialog_title"/>
+        android:drawableLeft="@drawable/main_btn_close"
+        android:text="@string/btn_call_cancel" />
     <LinearLayout
+        android:id="@+id/LinearLayout_child"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_below="@id/dialog_info">
-        <Button
-            android:id="@+id/dialog_cancel"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.50"
-            android:background="@color/lightred"
+        android:layout_height="wrap_content"
+        android:padding="25dp"
+        android:layout_below="@+id/dialog_cancel"
+        android:background="@color/lightgreen"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/dialog_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="25sp"
+            android:textStyle="bold"
             android:textColor="@color/white"
-            android:paddingLeft="50px"
-            android:textAllCaps="false"
-            android:drawableLeft="@drawable/main_btn_close"
-            android:text="@string/btn_call_cancel"/>
+            android:gravity="center"
+            android:text="@string/dialog_title"/>
+        <TextView
+            android:id="@+id/dialog_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="@string/dialog_text"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:layout_below="@id/dialog_title"/>
         <Button
             android:id="@+id/dialog_ok"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.50"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:background="@color/blue"
             android:textColor="@color/white"
             android:paddingLeft="50px"

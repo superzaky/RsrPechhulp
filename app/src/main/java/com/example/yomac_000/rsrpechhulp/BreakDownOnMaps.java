@@ -63,6 +63,7 @@ public class BreakDownOnMaps extends FragmentActivity implements
     private View vLinkToRehabMenu;
     private Intent intent;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +95,7 @@ public class BreakDownOnMaps extends FragmentActivity implements
                         finish();
                         break;
                     case R.id.LinkToPopUp:
+                        button.setVisibility(View.GONE);
                         // custom dialog
                         final Dialog dialog = new Dialog(BreakDownOnMaps.this);
                         dialog.requestWindowFeature(Window.FEATURE_LEFT_ICON);
@@ -114,6 +116,7 @@ public class BreakDownOnMaps extends FragmentActivity implements
                                         break;
                                     case R.id.dialog_cancel:
                                         dialog.dismiss();
+                                        button.setVisibility(View.VISIBLE);
                                         break;
                                     case R.id.dialog_ok:
                                         try {
@@ -144,8 +147,8 @@ public class BreakDownOnMaps extends FragmentActivity implements
                         dialogBtnConfirm.setOnClickListener(myOnlyhandler);
 
                         dialog.setCanceledOnTouchOutside(false);
-                        dialog.getWindow().setBackgroundDrawableResource(R.color.lightgreen);
-
+                        // Dit zorgt er helaas voor dat de hele scherm groen wordt.
+                        // dialog.getWindow().setBackgroundDrawableResource(R.color.lightgreen);
 
                         Window window = dialog.getWindow();
                         WindowManager.LayoutParams wlp = window.getAttributes();
